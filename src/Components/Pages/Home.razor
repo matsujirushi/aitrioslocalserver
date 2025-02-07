@@ -1,0 +1,78 @@
+﻿@page "/"
+@using System.Text.Json.Nodes
+@rendermode InteractiveServer
+@implements IDisposable
+
+<PageTitle>Home</PageTitle>
+
+<MudContainer>
+    <MudGrid>
+        <MudItem xs="6">
+            <MudSimpleTable Style="overflow-x: auto;">
+                <tbody>
+                    @foreach (var meta in Metas)
+                    {
+                        <tr>
+                            <td>@meta</td>
+                        </tr>
+                    }
+                </tbody>
+            </MudSimpleTable>
+        </MudItem>
+        <MudItem xs="6">
+            <MudPaper Elevation="0">
+                @if (!string.IsNullOrEmpty(LatestImageFileName))
+                {
+                    <MudImage Src="@($"/inferencedata/image/{LatestImageFileName}")" Elevation="5" Class="ma-1" />
+                }
+            </MudPaper>
+            <MudPaper Elevation="0">
+                @foreach (var fileName in ImagesFileName)
+                {
+                    <MudImage Src="@($"/inferencedata/image/{fileName}")" Width="80" Height="80" Elevation="5" Class="rounded-lg ma-1" />
+                }
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+</MudContainer>
+
+@code {
+    private List<string> Metas = new();
+    private string? LatestImageFileName;
+    private List<string> ImagesFileName = new();
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        InferenceDataUploadEndpoints.MetaReceived += MetaReceived;
+        InferenceDataUploadEndpoints.ImageReceived += ImageReceived;
+    }
+
+    public void Dispose()
+    {
+        InferenceDataUploadEndpoints.MetaReceived -= MetaReceived;
+        InferenceDataUploadEndpoints.ImageReceived -= ImageReceived;
+    }
+
+    private async void MetaReceived(object? sendor, MetaReceivedEventArgs args)
+    {
+        await InvokeAsync(() =>
+        {
+            Metas.Add(args.Meta!);
+
+            StateHasChanged();
+        });
+    }
+
+    private async void ImageReceived(object? sendor, ImageReceivedEventArgs args)
+    {
+        await InvokeAsync(() =>
+        {
+            LatestImageFileName = args.ImageFileName;
+            ImagesFileName.Add(args.ImageFileName!);
+
+            StateHasChanged();
+        });
+    }
+}
