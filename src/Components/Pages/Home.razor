@@ -2,6 +2,7 @@
 @using System.Text.Json.Nodes
 @rendermode InteractiveServer
 @implements IDisposable
+@inject aitrioslocalserver.Services.DeviceUpstreamService DeviceUpstreamService
 
 <PageTitle>Home</PageTitle>
 
@@ -47,6 +48,8 @@
 
         InferenceDataUploadEndpoints.MetaReceived += MetaReceived;
         InferenceDataUploadEndpoints.ImageReceived += ImageReceived;
+
+        DeviceUpstreamService.MetaReceived += DUMetaReceived;
     }
 
     public void Dispose()
@@ -55,7 +58,7 @@
         InferenceDataUploadEndpoints.ImageReceived -= ImageReceived;
     }
 
-    private async void MetaReceived(object? sendor, MetaReceivedEventArgs args)
+    private async void MetaReceived(object? sender, MetaReceivedEventArgs args)
     {
         await InvokeAsync(() =>
         {
@@ -65,7 +68,7 @@
         });
     }
 
-    private async void ImageReceived(object? sendor, ImageReceivedEventArgs args)
+    private async void ImageReceived(object? sender, ImageReceivedEventArgs args)
     {
         await InvokeAsync(() =>
         {
@@ -73,6 +76,14 @@
             ImagesFileName.Add(args.ImageFileName!);
 
             StateHasChanged();
+        });
+    }
+
+    private async void DUMetaReceived(object sender, EventArgs args)
+    {
+        await InvokeAsync(() =>
+        {
+            Console.WriteLine("DUMetaReceived()");
         });
     }
 }

@@ -1,4 +1,6 @@
 using aitrioslocalserver.Components;
+using aitrioslocalserver.Endpoints;
+using aitrioslocalserver.Services;
 using MudBlazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,6 +10,9 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
 builder.Services.AddMudServices();
+
+var deviceUpstreamService = new DeviceUpstreamService();
+builder.Services.AddSingleton(deviceUpstreamService);
 
 var app = builder.Build();
 
@@ -21,6 +26,9 @@ app.UseStaticFiles();
 app.UseAntiforgery();
 
 app.MapInferenceDataUpload();
+deviceUpstreamService.Map(app);
+
+app.UseDeviceUpstreamMiddleware();
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();

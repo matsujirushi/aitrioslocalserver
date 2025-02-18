@@ -6,7 +6,7 @@
                 "Mode": 2,
                 "UploadMethodIR": "HTTPStorage",
                 "StorageNameIR": "http://192.168.1.108:5000",
-                "StorageSubDirectoryPathIR": "/api/inferencedataupload/meta",
+                "StorageSubDirectoryPathIR": "/deviceupstream/meta",
                 "CropHOffset": 0,
                 "CropVOffset": 0,
                 "CropHSize": 4056,
